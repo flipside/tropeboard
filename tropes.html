@@ -1,0 +1,133 @@
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Tropeboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!-- Le styles -->
+  <link href="./bootstrap/css/bootstrap.css" rel="stylesheet">
+  <style type="text/css">
+    body {
+      padding-top: 60px;
+      padding-bottom: 40px;
+    }
+  </style>
+  <link href="./bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="./bootstrap/css/bootstrap-overwride.css" rel="stylesheet">
+
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- Fav and touch icons -->
+  <link rel="shortcut icon" href="../assets/ico/favicon.ico">
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+  <script type="text/javascript" src="https://static.firebase.com/v0/firebase.js"></script>
+  <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js"></script>
+</head>
+<body>
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <a data-toggle="collapse" data-target=".nav-collapse" class="btn btn-navbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span></a>
+          <a href="./index.html" class="brand">Tropeboard</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="./index.html">Home</a></li>
+              <li><a href="./tropeboard.html">Tropeboards</a></li>
+              <li><a href="./character.html">Characters</a></li>
+              <li><a href="./users.html">Users</a></li>
+              <li><a href="./tropes.html">Tropes</a></li>
+            </ul>
+            <ul class="nav pull-right">
+              <li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">guest <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li class=""><a href="/users/edit">Account</a></li>
+                <li><a href="/sessions/destroy">Log Out</a></li></ul></li>
+            </ul>
+            <p class="navbar-text pull-right">Welcome</p>
+          </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <h3>Characterization Tropes</h3>
+      <div class="span4">
+        <input type="text" id='characterizationInput' placeholder="New Trope">
+      </div>
+      <div class="span8">
+        <div id='characterizationTropes'></div>
+      </div>
+    </div>
+    <div class="row">
+      <h3>Plot Tropes</h3>
+      <div class="span4">
+        <input type="text" id='plotInput' placeholder="New Trope">
+      </div>
+      <div class="span8">
+        <div id='plotTropes'></div>
+      </div>
+    </div>
+    <h3>Other Tropes</h3>
+    <div id='messagesDiv'></div>
+    <input type='text' id='nameInput' placeholder='Name'>
+    <input type='text' id='messageInput' placeholder='Message...'>
+  </div>
+</body>
+<script type="text/javascript">
+$(document).ready(function() {
+
+  var tropeboardRef = new Firebase('https://tropeboard.firebaseio.com/');
+  // var tropeboardController = new Tropeboard.Controller(tropeboardRef);
+
+  // characterization
+  $('#characterizationInput').keypress(function (e) {
+    if (e.keyCode == 13) {
+      var name = $('#characterizationInput').val();
+      // var text = $('#messageInput').val();
+      tropeboardRef.child('tropes').child('characterization').push({name:name});
+      $('#characterizationInput').val('');
+    }
+  });
+
+  // Add a callback that is triggered for each chat message.
+  tropeboardRef.child('tropes').child('characterization').on('child_added', function (snapshot) {
+    var trope = snapshot.val();
+    $('<div/>').text(trope.name).appendTo($('#characterizationTropes'));
+    $('#characterizationTropes')[0].scrollTop = $('#characterizationTropes')[0].scrollHeight;
+  });
+
+  // plot
+  $('#plotInput').keypress(function (e) {
+    if (e.keyCode == 13) {
+      var name = $('#plotInput').val();
+      // var text = $('#messageInput').val();
+      tropeboardRef.child('tropes').child('plots').push({name:name});
+      $('#plotInput').val('');
+    }
+  });
+
+  // Add a callback that is triggered for each chat message.
+  tropeboardRef.child('tropes').child('plots').on('child_added', function (snapshot) {
+    var trope = snapshot.val();
+    $('<div/>').text(trope.name).appendTo($('#plotTropes'));
+    $('#plotTropes')[0].scrollTop = $('#plotTropes')[0].scrollHeight;
+  });
+
+})
+
+</script>
+</body>
+</html>
