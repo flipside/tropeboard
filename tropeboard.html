@@ -1,0 +1,342 @@
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Tropeboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!-- Le styles -->
+  <link href="./bootstrap/css/bootstrap.css" rel="stylesheet">
+  <style type="text/css">
+    body {
+      padding-top: 60px;
+      padding-bottom: 40px;
+    }
+  </style>
+  <link href="./bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="./bootstrap/css/bootstrap-overwride.css" rel="stylesheet">
+
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- Fav and touch icons -->
+  <link rel="shortcut icon" href="../assets/ico/favicon.ico">
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+  <script type="text/javascript" src="https://static.firebase.com/v0/firebase.js"></script>
+  <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js"></script>
+</head>
+<body>
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        <a data-toggle="collapse" data-target=".nav-collapse" class="btn btn-navbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span></a>
+          <a href="./index.html" class="brand">Tropeboard</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="./index.html">Home</a></li>
+              <li><a href="./tropeboard.html">Tropeboards</a></li>
+              <li><a href="./character.html">Characters</a></li>
+              <li><a href="./users.html">Users</a></li>
+              <li><a href="./tropes.html">Tropes</a></li>
+            </ul>
+            <ul class="nav pull-right">
+              <li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">guest <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li class=""><a href="/users/edit">Account</a></li>
+                <li><a href="/sessions/destroy">Log Out</a></li></ul></li>
+            </ul>
+            <p class="navbar-text pull-right">Welcome</p>
+          </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="tabbable">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#tab1" data-toggle="tab">All Tropeboards</a></li>
+          <li><a href="#tab2" data-toggle="tab">My Tropebords</a></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="tab1">
+            <div class="input-append">
+              <input class="span2" type="text">
+              <button class="btn" id="createTropeboard" type="button">Create</button>
+            </div>
+            <br />
+            <div class="tabbable tabs-left">
+              <ul class="nav nav-tabs span2" id='allTropeboardsList'>
+              </ul>
+              <div class="tab-content" id='allTropeboardsContent'>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script type="text/javascript">
+$(document).ready(function() {
+
+  var tropeboardRef = new Firebase('https://tropeboard.firebaseio.com/');
+  var characters = null
+  , setting = null
+  , plot = null;
+
+  tropeboardRef.child("characters").on("value", function(snapshot) {
+    characters = snapshot;
+    setupListenersForCharacters()
+  });
+
+  tropeboardRef.child("tropes").child("setting").on("value", function(snapshot) {
+    setting = snapshot;
+  });
+
+  tropeboardRef.child("tropes").child("plots").on("value", function(snapshot) {
+    plot = snapshot;
+  });
+
+
+  function renderCharacterizationTrope(snap) {
+    console.log('characterization trope: ' + snap.child('name').val());
+  }
+
+  function renderCharacter(snap) {
+    console.log('character name: ' + snap.child('name').val());
+    snap.child('tropes').forEach(function(childSnap) {
+      foo.child('characterization_tropes').child(childSnap.val()).on('value', renderCharacterizationTrope);
+    });
+  }
+
+  // foo.child('characters').child('-IhNyUmZnESSEXCX_gQO').on('value', renderCharacter);
+
+  // foo.child('characters').child('-IhNyUmZnESSEXCX_gQO').child('tropes').push('-IhNyHnSAn9U-HDGP7nB');\
+
+  $("#createTropeboard").on('click', function () {
+    var name = $(this).prev().val();
+    tropeboardRef.child('tropeboards').push({name: name});
+    $('#createTropeboardInput').val('');
+  });
+
+  function newChar() {
+    $(".newChar").click(function () {
+    // console.log('test');
+    // var name = $(this).parent().child('newCharInput').val()
+      throttled($(this));
+    });
+  }
+  var throttled = _.debounce(logRes, 150);
+
+  function logRes(that) {
+    var input = that.prev()
+    , name = input.val()
+    , parent = that.parents(".tropeboard")
+    , id = parent.attr('name');
+    console.log(id);
+    tropeboardRef.child('tropeboards').child(id).child('characters').push({name: name});
+    input.val('');
+
+  }
+
+  tropeboardRef.child('tropeboards').on('child_changed', function (snap) {
+    console.log('tropeboards.child_changed');
+    console.log(snap.child('characters').val());
+  });
+  function setupListenersForCharacters() {
+    // Add a callback that is triggered for each chat message.
+    tropeboardRef.child('tropeboards').on('child_added', function (snapshot) {
+      var tropeboard = snapshot.val();
+      var name = tropeboard.name;
+      var id = snapshot.name();
+      var tab = $("<li><a></a></li>");
+
+      var characterTropes = snapshot.child("characters").ref();
+      var settingTropes = snapshot.child("setting").ref();
+      var plotTropes = snapshot.child("plots").ref();
+
+      $("#allTropeboardsList").append(tab);
+
+      $("a",tab).text(name);
+      $("a",tab).attr("href", "#" + name);
+      $("a",tab).attr("data-toggle", "tab");
+        var characterTab = '<div class="row-fluid">'
+                                    +'<div class="span6">'
+                                      +'<h4>Selected Tropes</h4>'
+                                      +'<ul class="selectedTropes" id="selectedCharacterTropes-' + name + '">'
+                                      +'</ul>'
+                                    +'</div>'
+                                    +'<div class="span6">'
+                                      +'<h4>Available Tropes</h4>'
+                                      +'<ul class="availableTropes" id="availableCharacterTropes-'+name+'">'
+                                      +'</ul>'
+                                    +'</div>'
+                                  +'</div>';
+      var settingTab = '<div class="row-fluid">'
+                                  +'<div class="span6">'
+                                    +'<h4>Selected Tropes</h4>'
+                                    +'<ul class="selectedTropes" id="selectedSettingTropes-' + name + '">'
+                                    +'</ul>'
+                                  +'</div>'
+                                  +'<div class="span6">'
+                                    +'<h4>Available Tropes</h4>'
+                                    +'<ul class="availableTropes" id="availableSettingTropes-'+name+'">'
+                                    +'</ul>'
+                                  +'</div>'
+                                +'</div>';
+      var plotTab = '<div class="row-fluid">'
+                                  +'<div class="span6">'
+                                    +'<h4>Selected Tropes</h4>'
+                                    +'<ul class="selectedTropes" id="selectedPlotTropes-' + name + '">'
+                                    +'</ul>'
+                                  +'</div>'
+                                  +'<div class="span6">'
+                                    +'<h4>Available Tropes</h4>'
+                                    +'<ul class="availableTropes" id="availablePlotTropes-'+name+'">'
+                                    +'</ul>'
+                                  +'</div>'
+                                +'</div>';
+
+      var boardTab = '<div class="row-fluid"><div class="tabbable tabs-left"><ul class="nav nav-tabs span2">'
+                    +'<li><a href="#'+name+'_characters" data-toggle="tab">Characters</a></li>'
+                    +'<li><a href="#'+name+'_setting" data-toggle="tab">Setting</a></li>'
+                    +'<li><a href="#'+name+'_plot" data-toggle="tab">Plot</a></li>'
+                    +'</ul>'
+                    +'<div class="tab-content">'
+                      +'<div class="tab-pane" id="'+name+'_characters">'+characterTab+'</div>'
+                      +'<div class="tab-pane" id="'+name+'_setting">'+settingTab+'</div>'
+                      +'<div class="tab-pane" id="'+name+'_plot"><p>'+plotTab+'</div>'
+                    +'</div></div>';
+
+
+      var newDiv = '<div class="tab-pane tropeboard" id="'+name+'" name="'+id+'">'+boardTab+'</div>';
+      $("#allTropeboardsContent").append(newDiv);
+      // $('<div/>').text(tropeboard.text).appendTo($("#"+tropeboard.name));
+      // $("p",content).text(tropeboard.name);
+      // $("div",content).attr("class", "tab-pane active");
+      // $("div",content).attr("id", tropeboard.name);
+
+      // $('<div/>').text(tropeboard.text).prepend($('<em/>').text(message.name+': ')).appendTo($('#messagesDiv'));
+      // $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+      _.defer(newChar,100);
+
+      var charTropes = [];
+      var charTropeList = snapshot.child("characters").val();
+      for (var tropeKey in charTropeList) {
+        var charTropeId = charTropeList[tropeKey];
+        charTropes.push(charTropeId);
+        // console.log(charTropeId);
+        // console.log(charTropeList);
+        // console.log(characters.child(charTropeId));
+        var tropeName = characters.child(charTropeId).child("name").val();
+        var li = document.createElement("li");
+        li.innerHTML = tropeName;
+        $("#selectedCharacterTropes-" + name).append(li);
+      }
+
+      characters.forEach(function(trope) {
+        if (charTropes.indexOf(trope.name()) >= 0) {
+          return;
+        }
+
+        var li = document.createElement("li");
+        li.innerHTML = trope.child("name").val();
+
+        li.onclick = (function(nodeName, charTropes, tropeId) {
+          return function(event) {
+            var theLink = $(event.target);
+            $("#selectedCharacterTropes-" + nodeName).append(theLink);
+            charTropes.push(tropeId);
+          }
+        })(name, characterTropes, trope.name());
+
+        $("#availableCharacterTropes-" + name).append(li);
+      });
+
+      // setting
+      var settingTropes2 = [];
+      var settingTropeList = snapshot.child("setting").val();
+      for (var tropeKey in settingTropeList) {
+        var settingTropeId = settingTropeList[tropeKey];
+        settingTropes2.push(settingTropeId);
+        // console.log(settingTropeId);
+        // console.log(settingTropeList);
+        // console.log(setting.child(settingTropeId));
+        var tropeName = setting.child(settingTropeId).child("name").val();
+        var li = document.createElement("li");
+        li.innerHTML = tropeName;
+        $("#selectedSettingTropes-" + name).append(li);
+      }
+
+      setting.forEach(function(trope) {
+        if (charTropes.indexOf(trope.name()) >= 0) {
+          return;
+        }
+
+        var li = document.createElement("li");
+        li.innerHTML = trope.child("name").val();
+
+        li.onclick = (function(nodeName, settingTropes2, tropeId) {
+          return function(event) {
+            var theLink = $(event.target);
+            $("#selectedSettingTropes-" + nodeName).append(theLink);
+            settingTropes2.push(tropeId);
+          }
+        })(name, settingTropes2, trope.name());
+
+        $("#availableSettingTropes-" + name).append(li);
+      });
+
+      // plot
+      var plotTropes2 = [];
+      var plotTropeList = snapshot.child("plot").val();
+      for (var tropeKey in plotTropeList) {
+        var plotTropeId = plotTropeList[tropeKey];
+        plotTropes2.push(plotTropeId);
+        // console.log(plotTropeId);
+        // console.log(plotTropeList);
+        // console.log(plot.child(plotTropeId));
+        var tropeName = plot.child(plotTropeId).child("name").val();
+        var li = document.createElement("li");
+        li.innerHTML = tropeName;
+        $("#selectedPlotTropes-" + name).append(li);
+      }
+
+      plot.forEach(function(trope) {
+        if (plotTropes2.indexOf(trope.name()) >= 0) {
+          return;
+        }
+
+        var li = document.createElement("li");
+        li.innerHTML = trope.child("name").val();
+
+        li.onclick = (function(nodeName, plotTropes2, tropeId) {
+          return function(event) {
+            var theLink = $(event.target);
+            $("#selectedPlotTropes-" + nodeName).append(theLink);
+            plotTropes2.push(tropeId);
+          }
+        })(name, plotTropes2, trope.name());
+
+        $("#availablePlotTropes-" + name).append(li);
+      });
+    });
+  }
+
+})
+
+</script>
+<script src="./bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>
