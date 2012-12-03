@@ -72,12 +72,39 @@
       </div>
     </div>
     <div class="row">
+      <h3>Motivation Tropes</h3>
+      <div class="span4">
+        <input type="text" id='motivationInput' placeholder="New Trope">
+      </div>
+      <div class="span8">
+        <div id='motivationTropes'></div>
+      </div>
+    </div>
+    <div class="row">
+      <h3>Backstory Tropes</h3>
+      <div class="span4">
+        <input type="text" id='backstoryInput' placeholder="New Trope">
+      </div>
+      <div class="span8">
+        <div id='backstoryTropes'></div>
+      </div>
+    </div>
+    <div class="row">
       <h3>Plot Tropes</h3>
       <div class="span4">
         <input type="text" id='plotInput' placeholder="New Trope">
       </div>
       <div class="span8">
         <div id='plotTropes'></div>
+      </div>
+    </div>
+    <div class="row">
+      <h3>Setting Tropes</h3>
+      <div class="span4">
+        <input type="text" id='settingInput' placeholder="New Trope">
+      </div>
+      <div class="span8">
+        <div id='settingTropes'></div>
       </div>
     </div>
     <h3>Other Tropes</h3>
@@ -102,11 +129,56 @@ $(document).ready(function() {
     }
   });
 
+  $('#motivationInput').keypress(function (e) {
+    if (e.keyCode == 13) {
+      var name = $('#motivationInput').val();
+      // var text = $('#messageInput').val();
+      tropeboardRef.child('tropes').child('motivation').push({name:name});
+      $('#motivationInput').val('');
+    }
+  });
+
+  $('#backstoryInput').keypress(function (e) {
+    if (e.keyCode == 13) {
+      var name = $('#backstoryInput').val();
+      // var text = $('#messageInput').val();
+      tropeboardRef.child('tropes').child('backstory').push({name:name});
+      $('#backstoryInput').val('');
+    }
+  });
+
+  $('#settingInput').keypress(function (e) {
+    if (e.keyCode == 13) {
+      var name = $('#settingInput').val();
+      // var text = $('#messageInput').val();
+      tropeboardRef.child('tropes').child('setting').push({name:name});
+      $('#settingInput').val('');
+    }
+  });
+
   // Add a callback that is triggered for each chat message.
   tropeboardRef.child('tropes').child('characterization').on('child_added', function (snapshot) {
     var trope = snapshot.val();
     $('<div/>').text(trope.name).appendTo($('#characterizationTropes'));
     $('#characterizationTropes')[0].scrollTop = $('#characterizationTropes')[0].scrollHeight;
+  });
+
+  tropeboardRef.child('tropes').child('motivation').on('child_added', function (snapshot) {
+    var trope = snapshot.val();
+    $('<div/>').text(trope.name).appendTo($('#motivationTropes'));
+    $('#motivationTropes')[0].scrollTop = $('#motivationTropes')[0].scrollHeight;
+  });
+
+  tropeboardRef.child('tropes').child('backstory').on('child_added', function (snapshot) {
+    var trope = snapshot.val();
+    $('<div/>').text(trope.name).appendTo($('#backstoryTropes'));
+    $('#backstoryTropes')[0].scrollTop = $('#backstoryTropes')[0].scrollHeight;
+  });
+
+  tropeboardRef.child('tropes').child('setting').on('child_added', function (snapshot) {
+    var trope = snapshot.val();
+    $('<div/>').text(trope.name).appendTo($('#settingTropes'));
+    $('#settingTropes')[0].scrollTop = $('#settingTropes')[0].scrollHeight;
   });
 
   // plot

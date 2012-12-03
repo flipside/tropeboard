@@ -69,111 +69,6 @@
           <li><a href="#tab2" data-toggle="tab">My Tropebords</a></li>
         </ul>
         <div class="tab-content">
-          <div class="tab-pane" id="tab2">
-            <h3>Here's all your tropeboards</h3>
-            <p>
-
-              <div class="input-append">
-                <input class="span2" id="newTropeboardInput" type="text">
-                <button class="btn" id="newTropeboardButton" type="button">Create New Tropeboard</button>
-              </div>
-            </p>
-            <br />
-            <div class="row">
-              <div class="tabbable tabs-left">
-                <ul class="nav nav-tabs span2">
-                  <li class="active"><a href="#tb1" data-toggle="tab">My Tropetastic Story</a></li>
-                  <li><a href="#tb2" data-toggle="tab">My Inspirational Trope</a></li>
-                </ul>
-                <div class="tab-content">
-                  <div class="tab-pane active" id="tb1">
-
-                      <div class="row-fluid">
-                      <div class="tabbable tabs-left">
-                        <ul class="nav nav-tabs span2">
-                          <li class="active"><a href="#tb1-characters" data-toggle="tab">Characters</a></li>
-                          <li><a href="#tb1-setting" data-toggle="tab">Setting</a></li>
-                          <li><a href="#tb1-plot" data-toggle="tab">Plot</a></li>
-                        </ul>
-                        <div class="tab-content">
-                          <div class="tab-pane active" id="tb1-characters">
-                            <input type="text" id='newCharName' placeholder="New Character Name">
-                            <button class="btn btn-primary" type="button">Create New Character</button>
-                            <p>
-                            <div class="row-fluid">
-                              <div class="tabbable tabs-left">
-                                <ul class="nav nav-tabs span3">
-                                  <li class="active"><a href="#tb1-characters-char0" data-toggle="tab">Some Guy</a></li>
-                                  <li><a href="#tb1-characters-char1" data-toggle="tab">Random Girl</a></li>
-                                  <li><a href="#tb1-characters-char2" data-toggle="tab">That Kid</a></li>
-                                </ul>
-                                <div class="tab-content">
-                                  <div class="tab-pane active" id="tb1-characters-char0">
-
-                                    <div class="row-fluid">
-                                      <div class="tabbable tabs-left">
-                                        <ul class="nav nav-tabs span4">
-                                          <li class="active"><a href="#tb1-characters-char0-characterization" data-toggle="tab">Characterization</a></li>
-                                          <li><a href="#tb1-characters-char0-motivation" data-toggle="tab">Motivation</a></li>
-                                          <li><a href="#tb1-characters-char0-backstory" data-toggle="tab">Backstory</a></li>
-                                        </ul>
-                                        <div class="tab-content">
-                                          <div class="tab-pane active" id="tb1-characters-char0-characterization">
-                                            <div class="row-fluid">
-                                              <div class="span6">
-                                                <h4>Selected</h4>
-                                                <select id="selectedTropes" multiple="multiple">
-                                                </select>
-                                              </div>
-                                              <div class="span6">
-                                                <h4>Available Tropes</h4>
-                                                <select multiple="multiple">
-                                                  <option>Trope</option>
-                                                  <option>Trope</option>
-                                                  <option>Trope</option>
-                                                  <option>Trope</option>
-                                                  <option>Trope</option>
-                                                </select>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <div class="tab-pane" id="tb1-characters-char0-motivation">
-                                            <p>Howdy, I'm the setting.</p>
-                                          </div>
-                                          <div class="tab-pane" id="tb1-characters-char0-backstory">
-                                            <p>Howdy, I'm the plot</p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="tab-pane" id="tb1-characters-char1">
-                                    <p>Howdy, I'm the setting.</p>
-                                  </div>
-                                  <div class="tab-pane" id="tb1-characters-char2">
-                                    <p>Howdy, I'm the plot</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="tab-pane" id="tb1-setting">
-                            <p>Howdy, I'm the setting.</p>
-                          </div>
-                          <div class="tab-pane" id="tb1-plot">
-                            <p>Howdy, I'm the plot</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="tab-pane" id="tb2">
-                    <p>Howdy, I'm in Section 2.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
           <div class="tab-pane active" id="tab1">
             <div class="input-append">
               <input class="span2" type="text">
@@ -190,67 +85,29 @@
         </div>
       </div>
     </div>
-    <div class="row">
-      <h3>Characterization Tropes</h3>
-      <div class="span4">
-        <input type="text" id='characterizationInput' placeholder="New Trope">
-      </div>
-      <div class="span8">
-        <div id='characterizationTropes'></div>
-      </div>
-    </div>
-    <div class="row">
-      <h3>Plot Tropes</h3>
-      <div class="span4">
-        <input type="text" id='plotInput' placeholder="New Trope">
-      </div>
-      <div class="span8">
-        <div id='plotTropes'></div>
-      </div>
-    </div>
-    <h3>Other Tropes</h3>
-    <div id='messagesDiv'></div>
-    <input type='text' id='nameInput' placeholder='Name'>
-    <input type='text' id='messageInput' placeholder='Message...'>
-  </div></body>
+  </div>
+</body>
 <script type="text/javascript">
 $(document).ready(function() {
 
   var tropeboardRef = new Firebase('https://tropeboard.firebaseio.com/');
-  // var tropeboardController = new Tropeboard.Controller(tropeboardRef);
+  var characters = null
+  , setting = null
+  , plot = null;
 
-  // $('#tab1').click(function (e) {
-  //   e.preventDefault();
-  //   $(this).tab('show');
-  // });
-
-  // $('#tab2').click(function (e) {
-  //   e.preventDefault();
-  //   $(this).tab('show');
-  // });
-  // Add a callback that is triggered for each chat message.
-  tropeboardRef.child('tropes').child('characterization').on('child_added', function (snapshot) {
-    var trope = snapshot.val();
-    $('<option/>').text(trope.name).appendTo($('#selectedTropes'));
-    // $('#selectedTropes')[0].scrollTop = $('#selectedTropes')[0].scrollHeight;
+  tropeboardRef.child("characters").on("value", function(snapshot) {
+    characters = snapshot;
+    setupListenersForCharacters()
   });
 
-  $('#messageInput').keypress(function (e) {
-    if (e.keyCode == 13) {
-      var name = $('#nameInput').val();
-      var text = $('#messageInput').val();
-      tropeboardRef.push({name:name, text:text});
-      $('#messageInput').val('');
-    }
+  tropeboardRef.child("tropes").child("setting").on("value", function(snapshot) {
+    setting = snapshot;
   });
 
-  // Add a callback that is triggered for each chat message.
-  tropeboardRef.child('message').on('child_added', function (snapshot) {
-    var message = snapshot.val();
-    console.log(message);
-    $('<div/>').text(message.text || '').prepend($('<em/>').text(message.name+': ')).appendTo($('#messagesDiv'));
-    $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+  tropeboardRef.child("tropes").child("plots").on("value", function(snapshot) {
+    plot = snapshot;
   });
+
 
   function renderCharacterizationTrope(snap) {
     console.log('characterization trope: ' + snap.child('name').val());
@@ -294,53 +151,188 @@ $(document).ready(function() {
   }
 
   tropeboardRef.child('tropeboards').on('child_changed', function (snap) {
+    console.log('tropeboards.child_changed');
     console.log(snap.child('characters').val());
   });
+  function setupListenersForCharacters() {
+    // Add a callback that is triggered for each chat message.
+    tropeboardRef.child('tropeboards').on('child_added', function (snapshot) {
+      var tropeboard = snapshot.val();
+      var name = tropeboard.name;
+      var id = snapshot.name();
+      var tab = $("<li><a></a></li>");
 
-  // Add a callback that is triggered for each chat message.
-  tropeboardRef.child('tropeboards').on('child_added', function (snapshot) {
-    var tropeboard = snapshot.val();
-    var name = tropeboard.name;
-    var id = snapshot.name();
-    var tab = $("<li><a></a></li>");
+      var characterTropes = snapshot.child("characters").ref();
+      var settingTropes = snapshot.child("setting").ref();
+      var plotTropes = snapshot.child("plots").ref();
 
-    $("#allTropeboardsList").append(tab);
+      $("#allTropeboardsList").append(tab);
 
-    $("a",tab).text(name);
-    $("a",tab).attr("href", "#" + name);
-    $("a",tab).attr("data-toggle", "tab");
+      $("a",tab).text(name);
+      $("a",tab).attr("href", "#" + name);
+      $("a",tab).attr("data-toggle", "tab");
+        var characterTab = '<div class="row-fluid">'
+                                    +'<div class="span6">'
+                                      +'<h4>Selected Tropes</h4>'
+                                      +'<ul class="selectedTropes" id="selectedCharacterTropes-' + name + '">'
+                                      +'</ul>'
+                                    +'</div>'
+                                    +'<div class="span6">'
+                                      +'<h4>Available Tropes</h4>'
+                                      +'<ul class="availableTropes" id="availableCharacterTropes-'+name+'">'
+                                      +'</ul>'
+                                    +'</div>'
+                                  +'</div>';
+      var settingTab = '<div class="row-fluid">'
+                                  +'<div class="span6">'
+                                    +'<h4>Selected Tropes</h4>'
+                                    +'<ul class="selectedTropes" id="selectedSettingTropes-' + name + '">'
+                                    +'</ul>'
+                                  +'</div>'
+                                  +'<div class="span6">'
+                                    +'<h4>Available Tropes</h4>'
+                                    +'<ul class="availableTropes" id="availableSettingTropes-'+name+'">'
+                                    +'</ul>'
+                                  +'</div>'
+                                +'</div>';
+      var plotTab = '<div class="row-fluid">'
+                                  +'<div class="span6">'
+                                    +'<h4>Selected Tropes</h4>'
+                                    +'<ul class="selectedTropes" id="selectedPlotTropes-' + name + '">'
+                                    +'</ul>'
+                                  +'</div>'
+                                  +'<div class="span6">'
+                                    +'<h4>Available Tropes</h4>'
+                                    +'<ul class="availableTropes" id="availablePlotTropes-'+name+'">'
+                                    +'</ul>'
+                                  +'</div>'
+                                +'</div>';
 
-    // var content = $("<div><p></p></div>");
-    var charTab = '<div class="row-fluid"><div class="tabbable tabs-left"><ul class="nav nav-tabs span2">'
-                  +'<div class="input-append"><input type="text">'
-                  +'<button class="btn newChar" type="button">Create</button></div>'
-                  +'</ul>'
-                  +'<div class="tab-content">'
-                  +'</div></div></div>';
-
-    var boardTab = '<div class="row-fluid"><div class="tabbable tabs-left"><ul class="nav nav-tabs span2">'
-                  +'<li><a href="#'+name+'_characters" data-toggle="tab">Characters</a></li>'
-                  +'<li><a href="#'+name+'_setting" data-toggle="tab">Setting</a></li>'
-                  +'<li><a href="#'+name+'_plot" data-toggle="tab">Plot</a></li>'
-                  +'</ul>'
-                  +'<div class="tab-content">'
-                    +'<div class="tab-pane" id="'+name+'_characters">'+charTab+'</div>'
-                    +'<div class="tab-pane" id="'+name+'_setting"><p>Setting</p></div>'
-                    +'<div class="tab-pane" id="'+name+'_plot"><p>Plot</p></div>'
-                  +'</div></div>';
+      var boardTab = '<div class="row-fluid"><div class="tabbable tabs-left"><ul class="nav nav-tabs span2">'
+                    +'<li><a href="#'+name+'_characters" data-toggle="tab">Characters</a></li>'
+                    +'<li><a href="#'+name+'_setting" data-toggle="tab">Setting</a></li>'
+                    +'<li><a href="#'+name+'_plot" data-toggle="tab">Plot</a></li>'
+                    +'</ul>'
+                    +'<div class="tab-content">'
+                      +'<div class="tab-pane" id="'+name+'_characters">'+characterTab+'</div>'
+                      +'<div class="tab-pane" id="'+name+'_setting">'+settingTab+'</div>'
+                      +'<div class="tab-pane" id="'+name+'_plot"><p>'+plotTab+'</div>'
+                    +'</div></div>';
 
 
-    var newDiv = '<div class="tab-pane tropeboard" id="'+name+'" name="'+id+'">'+boardTab+'</div>';
-    $("#allTropeboardsContent").append(newDiv);
-    // $('<div/>').text(tropeboard.text).appendTo($("#"+tropeboard.name));
-    // $("p",content).text(tropeboard.name);
-    // $("div",content).attr("class", "tab-pane active");
-    // $("div",content).attr("id", tropeboard.name);
+      var newDiv = '<div class="tab-pane tropeboard" id="'+name+'" name="'+id+'">'+boardTab+'</div>';
+      $("#allTropeboardsContent").append(newDiv);
+      // $('<div/>').text(tropeboard.text).appendTo($("#"+tropeboard.name));
+      // $("p",content).text(tropeboard.name);
+      // $("div",content).attr("class", "tab-pane active");
+      // $("div",content).attr("id", tropeboard.name);
 
-    // $('<div/>').text(tropeboard.text).prepend($('<em/>').text(message.name+': ')).appendTo($('#messagesDiv'));
-    // $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
-    _.defer(newChar,100);
-  });
+      // $('<div/>').text(tropeboard.text).prepend($('<em/>').text(message.name+': ')).appendTo($('#messagesDiv'));
+      // $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+      _.defer(newChar,100);
+
+      var charTropes = [];
+      var charTropeList = snapshot.child("characters").val();
+      for (var tropeKey in charTropeList) {
+        var charTropeId = charTropeList[tropeKey];
+        charTropes.push(charTropeId);
+        // console.log(charTropeId);
+        // console.log(charTropeList);
+        // console.log(characters.child(charTropeId));
+        var tropeName = characters.child(charTropeId).child("name").val();
+        var li = document.createElement("li");
+        li.innerHTML = tropeName;
+        $("#selectedCharacterTropes-" + name).append(li);
+      }
+
+      characters.forEach(function(trope) {
+        if (charTropes.indexOf(trope.name()) >= 0) {
+          return;
+        }
+
+        var li = document.createElement("li");
+        li.innerHTML = trope.child("name").val();
+
+        li.onclick = (function(nodeName, charTropes, tropeId) {
+          return function(event) {
+            var theLink = $(event.target);
+            $("#selectedCharacterTropes-" + nodeName).append(theLink);
+            charTropes.push(tropeId);
+          }
+        })(name, characterTropes, trope.name());
+
+        $("#availableCharacterTropes-" + name).append(li);
+      });
+
+      // setting
+      var settingTropes2 = [];
+      var settingTropeList = snapshot.child("setting").val();
+      for (var tropeKey in settingTropeList) {
+        var settingTropeId = settingTropeList[tropeKey];
+        settingTropes2.push(settingTropeId);
+        // console.log(settingTropeId);
+        // console.log(settingTropeList);
+        // console.log(setting.child(settingTropeId));
+        var tropeName = setting.child(settingTropeId).child("name").val();
+        var li = document.createElement("li");
+        li.innerHTML = tropeName;
+        $("#selectedSettingTropes-" + name).append(li);
+      }
+
+      setting.forEach(function(trope) {
+        if (charTropes.indexOf(trope.name()) >= 0) {
+          return;
+        }
+
+        var li = document.createElement("li");
+        li.innerHTML = trope.child("name").val();
+
+        li.onclick = (function(nodeName, settingTropes2, tropeId) {
+          return function(event) {
+            var theLink = $(event.target);
+            $("#selectedSettingTropes-" + nodeName).append(theLink);
+            settingTropes2.push(tropeId);
+          }
+        })(name, settingTropes2, trope.name());
+
+        $("#availableSettingTropes-" + name).append(li);
+      });
+
+      // plot
+      var plotTropes2 = [];
+      var plotTropeList = snapshot.child("plot").val();
+      for (var tropeKey in plotTropeList) {
+        var plotTropeId = plotTropeList[tropeKey];
+        plotTropes2.push(plotTropeId);
+        // console.log(plotTropeId);
+        // console.log(plotTropeList);
+        // console.log(plot.child(plotTropeId));
+        var tropeName = plot.child(plotTropeId).child("name").val();
+        var li = document.createElement("li");
+        li.innerHTML = tropeName;
+        $("#selectedPlotTropes-" + name).append(li);
+      }
+
+      plot.forEach(function(trope) {
+        if (plotTropes2.indexOf(trope.name()) >= 0) {
+          return;
+        }
+
+        var li = document.createElement("li");
+        li.innerHTML = trope.child("name").val();
+
+        li.onclick = (function(nodeName, plotTropes2, tropeId) {
+          return function(event) {
+            var theLink = $(event.target);
+            $("#selectedPlotTropes-" + nodeName).append(theLink);
+            plotTropes2.push(tropeId);
+          }
+        })(name, plotTropes2, trope.name());
+
+        $("#availablePlotTropes-" + name).append(li);
+      });
+    });
+  }
 
 })
 

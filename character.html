@@ -64,133 +64,262 @@
   <div class="container">
     <div class="row">
       <h2>Characters</h2>
-      <form class="form-inline">
-        <input type="text" id='newCharName' placeholder="New Character Name">
-        <button class="btn btn-primary" id="createChar" type="button">Create New Character</button>
-      </form>
+      <div class="input-append">
+        <input type="text" placeholder="New Character Name">
+        <button class="btn" id="createChar" type="button">Create</button>
+      </div>
       <p>
       <div class="row-fluid">
         <div class="tabbable tabs-left">
-          <ul class="nav nav-tabs span3">
-            <li class="active"><a href="#tb1-characters-char0" data-toggle="tab">Some Guy</a></li>
-            <li><a href="#tb1-characters-char1" data-toggle="tab">Random Girl</a></li>
-            <li><a href="#tb1-characters-char2" data-toggle="tab">That Kid</a></li>
+          <ul class="nav nav-tabs span3" id="charList">
           </ul>
-          <div class="tab-content">
-            <div class="tab-pane active" id="tb1-characters-char0">
-
-              <div class="row-fluid">
-                <div class="tabbable tabs-left">
-                  <ul class="nav nav-tabs span4">
-                    <li class="active"><a href="#tb1-characters-char0-characterization" data-toggle="tab">Characterization</a></li>
-                    <li><a href="#tb1-characters-char0-motivation" data-toggle="tab">Motivation</a></li>
-                    <li><a href="#tb1-characters-char0-backstory" data-toggle="tab">Backstory</a></li>
-                  </ul>
-                  <div class="tab-content">
-                    <div class="tab-pane active" id="tb1-characters-char0-characterization">
-                      <div class="row-fluid">
-                        <div class="span6">
-                          <h4>Selected</h4>
-                          <div id="SelectedTropes">
-                          </div>
-                        </div>
-                        <div class="span6">
-                          <h4>Available Tropes</h4>
-                          <div id="AvailableTropes">
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="tab-pane" id="tb1-characters-char0-motivation">
-                      <p>Howdy, I'm the setting.</p>
-                    </div>
-                    <div class="tab-pane" id="tb1-characters-char0-backstory">
-                      <p>Howdy, I'm the plot</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="tab-pane" id="tb1-characters-char1">
-              <p>Howdy, I'm the setting.</p>
-            </div>
-            <div class="tab-pane" id="tb1-characters-char2">
-              <p>Howdy, I'm the plot</p>
-            </div>
+          <div class="tab-content" id="charTabs">
           </div>
         </div>
       </div>
     </div>
-    <div class="row">
-      <h3>Characterization Tropes</h3>
-      <div class="span4">
-        <input type="text" id='characterizationInput' placeholder="New Trope">
-      </div>
-      <div class="span8">
-        <div id='characterizationTropes'></div>
-      </div>
-    </div>
-    <div class="row">
-      <h3>Plot Tropes</h3>
-      <div class="span4">
-        <input type="text" id='plotInput' placeholder="New Trope">
-      </div>
-      <div class="span8">
-        <div id='plotTropes'></div>
-      </div>
-    </div>
-    <h3>Other Tropes</h3>
-    <div id='messagesDiv'></div>
-    <input type='text' id='nameInput' placeholder='Name'>
-    <input type='text' id='messageInput' placeholder='Message...'>
-  </div></body>
+  </div>
+</body>
 <script type="text/javascript">
 $(document).ready(function() {
 
+  var characterization = null
+  , motivation = null
+  , backstory = null;
   var tropeboardRef = new Firebase('https://tropeboard.firebaseio.com/');
-  // var tropeboardController = new Tropeboard.Controller(tropeboardRef);
 
-  // $('#tab1').click(function (e) {
-  //   e.preventDefault();
-  //   $(this).tab('show');
-  // });
+  $("#createChar").on('click', function () {
+    var input = $(this).prev();
+    var name = input.val();
+    tropeboardRef.child('characters').push({name: name});
+    input.val('');
+  });
 
-  // $('#tab2').click(function (e) {
-  //   e.preventDefault();
-  //   $(this).tab('show');
-  // });
-  // Add a callback that is triggered for each chat message.
+  tropeboardRef.child("tropes").child("characterization").on("value", function(snapshot) {
+    characterization = snapshot;
+    setupListenersForCharacters();
+  });
+
+  tropeboardRef.child("tropes").child("motivation").on("value", function(snapshot) {
+    motivation = snapshot;
+  });
+
+  tropeboardRef.child("tropes").child("backstory").on("value", function(snapshot) {
+    backstory = snapshot;
+  });
+
+  function setupListenersForCharacters() {
+
+    tropeboardRef.child('characters').on('child_added', function (snapshot) {
+      var newChar = snapshot.val();
+      var name = newChar.name;
+      var id = snapshot.name();
+      var list = $("<li><a></a></li>");
+
+      var characterTropes = snapshot.child("characterization").ref();
+      var motivationTropes = snapshot.child("motivation").ref();
+      var backstoryTropes = snapshot.child("backstory").ref();
+
+      $("#charList").append(list);
+
+      $("a",list).text(name);
+      $("a",list).attr("href", "#" + name);
+      $("a",list).attr("data-toggle", "tab");
+
+      var characterizationTab = '<div class="row-fluid">'
+                                  +'<div class="span6">'
+                                    +'<h4>Selected Tropes</h4>'
+                                    +'<ul class="selectedTropes" id="selectedCharacterizationTropes-' + name + '">'
+                                    +'</ul>'
+                                  +'</div>'
+                                  +'<div class="span6">'
+                                    +'<h4>Available Tropes</h4>'
+                                    +'<ul class="availableTropes" id="availableCharacterizationTropes-'+name+'">'
+                                    +'</ul>'
+                                  +'</div>'
+                                +'</div>';
+      var motivationTab = '<div class="row-fluid">'
+                                  +'<div class="span6">'
+                                    +'<h4>Selected Tropes</h4>'
+                                    +'<ul class="selectedTropes" id="selectedMotivationTropes-' + name + '">'
+                                    +'</ul>'
+                                  +'</div>'
+                                  +'<div class="span6">'
+                                    +'<h4>Available Tropes</h4>'
+                                    +'<ul class="availableTropes" id="availableMotivationTropes-'+name+'">'
+                                    +'</ul>'
+                                  +'</div>'
+                                +'</div>';
+      var backstoryTab = '<div class="row-fluid">'
+                                  +'<div class="span6">'
+                                    +'<h4>Selected Tropes</h4>'
+                                    +'<ul class="selectedTropes" id="selectedBackstoryTropes-' + name + '">'
+                                    +'</ul>'
+                                  +'</div>'
+                                  +'<div class="span6">'
+                                    +'<h4>Available Tropes</h4>'
+                                    +'<ul class="availableTropes" id="availableBackstoryTropes-'+name+'">'
+                                    +'</ul>'
+                                  +'</div>'
+                                +'</div>';
+
+      var boardTab = '<div class="row-fluid"><div class="tabbable tabs-left"><ul class="nav nav-tabs span3">'
+                    +'<li><a href="#'+name+'_characterization" data-toggle="tab">Characterization</a></li>'
+                    +'<li><a href="#'+name+'_movivation" data-toggle="tab">Motivation</a></li>'
+                    +'<li><a href="#'+name+'_backstory" data-toggle="tab">Backstory</a></li>'
+                    +'</ul>'
+                    +'<div class="tab-content">'
+                      +'<div class="tab-pane" id="'+name+'_characterization">'+characterizationTab+'</div>'
+                      +'<div class="tab-pane" id="'+name+'_movivation">'+motivationTab+'</div>'
+                      +'<div class="tab-pane" id="'+name+'_backstory">'+backstoryTab+'</div>'
+                    +'</div></div>';
+
+
+      var newDiv = '<div class="tab-pane character" id="'+name+'" name="'+id+'">'+boardTab+'</div>';
+      $("#charTabs").append(newDiv);
+
+      // characterization
+      var charTropes = [];
+      var charTropeList = snapshot.child("characterization").val();
+      for (var tropeKey in charTropeList) {
+        var charTropeId = charTropeList[tropeKey];
+        charTropes.push(charTropeId);
+        // console.log(charTropeId);
+        var tropeName = characterization.child(charTropeId).child("name").val();
+        var li = document.createElement("li");
+        li.innerHTML = tropeName;
+        $("#selectedCharacterizationTropes-" + name).append(li);
+      }
+
+      characterization.forEach(function(trope) {
+        if (charTropes.indexOf(trope.name()) >= 0) {
+          return;
+        }
+
+        var li = document.createElement("li");
+        li.innerHTML = trope.child("name").val();
+
+        li.onclick = (function(nodeName, charTropes, tropeId) {
+          return function(event) {
+            var theLink = $(event.target);
+            $("#selectedCharacterizationTropes-" + nodeName).append(theLink);
+            charTropes.push(tropeId);
+          }
+        })(name, characterTropes, trope.name());
+
+        $("#availableCharacterizationTropes-" + name).append(li);
+      });
+
+      // motivation
+      var charTropes = [];
+      var charTropeList = snapshot.child("motivation").val();
+      for (var tropeKey in charTropeList) {
+        var charTropeId = charTropeList[tropeKey];
+        charTropes.push(charTropeId);
+        var tropeName = motivation.child(charTropeId).child("name").val();
+        var li = document.createElement("li");
+        li.innerHTML = tropeName;
+        $("#selectedMotivationTropes-" + name).append(li);
+      }
+
+      motivation.forEach(function(trope) {
+        if (charTropes.indexOf(trope.name()) >= 0) {
+          return;
+        }
+
+        var li = document.createElement("li");
+        li.innerHTML = trope.child("name").val();
+
+        li.onclick = (function(nodeName, charTropes, tropeId) {
+          return function(event) {
+            var theLink = $(event.target);
+            $("#selectedMotivationTropes-" + nodeName).append(theLink);
+            charTropes.push(tropeId);
+          }
+        })(name, characterTropes, trope.name());
+
+        $("#availableMotivationTropes-" + name).append(li);
+      });
+
+      // backstory
+      var charTropes = [];
+      var charTropeList = snapshot.child("backstory").val();
+      for (var tropeKey in charTropeList) {
+        var charTropeId = charTropeList[tropeKey];
+        charTropes.push(charTropeId);
+        var tropeName = backstory.child(charTropeId).child("name").val();
+        var li = document.createElement("li");
+        li.innerHTML = tropeName;
+        $("#selectedBackstoryTropes-" + name).append(li);
+      }
+
+      backstory.forEach(function(trope) {
+        if (charTropes.indexOf(trope.name()) >= 0) {
+          return;
+        }
+
+        var li = document.createElement("li");
+        li.innerHTML = trope.child("name").val();
+
+        li.onclick = (function(nodeName, charTropes, tropeId) {
+          return function(event) {
+            var theLink = $(event.target);
+            $("#selectedBackstoryTropes-" + nodeName).append(theLink);
+            charTropes.push(tropeId);
+          }
+        })(name, characterTropes, trope.name());
+
+        $("#availableBackstoryTropes-" + name).append(li);
+      });
+    });
+  }
+
+  /*
   tropeboardRef.child('tropes').child('characterization').on('child_added', function (snapshot) {
     var trope = snapshot.val();
+
+    console.log($('.character .tab-content .tab-pane').attr('id'));
     $('<div/>').text(trope.name).appendTo($('#SelectedTropes'));
     // $('#selectedTropes')[0].scrollTop = $('#selectedTropes')[0].scrollHeight;
   });
 
+
   tropeboardRef.child('tropes').child('characterization').on('child_added', function (snapshot) {
     var trope = snapshot.val();
-    // $('<div/>').text(trope.name).appendTo($('#AvailableTropes'));
+    var li = $("<li><a></a></li>");
+
+    $(".availableTropes").append(li);
+
+    $("a",li).text(trope.name);
+    $("a",li).attr("href", "#" + trope.name);
+    $("a",li).attr("class", "avail");
+  });
+  */
+
+  $(".availableTropes").on('click', function () {
+    console.log($(this).attr("id"));
+  });
+
+
+  tropeboardRef.child('tropes').child('characterization').on('child_added', function (snapshot) {
+    var trope = snapshot.val();
     var li = $("<div><a></a></div>");
 
     $("#AvailableTropes").append(li);
 
     $("a",li).text(trope.name);
     $("a",li).attr("href", "#" + trope.name);
-    $("a",li).attr("class", "at");
-    // $('<li/>').text('<a href="#" id="'+trope.name+'">'+trope.name+'</a>').appendTo($('#AvailableTropes'));
-    // $('#selectedTropes')[0].scrollTop = $('#selectedTropes')[0].scrollHeight;
+    $("a",li).attr("class", "avail");
   });
 
-  $("#AvailableTropes.at").on('click', 'div', function () {
-    $("#AvailableTropes div.clicked").removeClass("clicked").appendTo('#SelectedTropes');
+
+  $("#AvailableTropes").on('click', 'div a', function () {
+    console.log($(this).text());
   });
 
-  $("#SelectedTropes").on('click', 'div', function () {
-    $("#SelectedTropes div.clicked").removeClass("clicked").appendTo('#AvailableTropes');
-  });
-
-  $('#createChar').on('click', function () {
-    tropeboardRef.child('characters').push({name: 'test', tropes: []});
-  });
+  // $("#SelectedTropes").on('click', 'div', function () {
+  //   $("#SelectedTropes div.clicked").removeClass("clicked").appendTo('#AvailableTropes');
+  // });
 
   $('#messageInput').keypress(function (e) {
     if (e.keyCode == 13) {
